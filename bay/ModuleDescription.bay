@@ -16,13 +16,14 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Cron;
+namespace Runtime.Task;
 
 use Runtime.Annotations.Manager;
 use Runtime.Annotations.LambdaChain;
 use Runtime.Annotations.LambdaChainDeclare;
 use Runtime.Annotations.Provider;
 use Runtime.Interfaces.ModuleDescriptionInterface;
+use Runtime.Task.TaskOutputProvider;
 
 
 class ModuleDescription implements ModuleDescriptionInterface
@@ -32,7 +33,7 @@ class ModuleDescription implements ModuleDescriptionInterface
 	 * Returns module name
 	 * @return string
 	 */
-	pure string getModuleName() => "Runtime.Cron";
+	pure string getModuleName() => "Runtime.Task";
 	
 	
 	
@@ -60,6 +61,7 @@ class ModuleDescription implements ModuleDescriptionInterface
 	 */
 	pure Collection<Dict> entities() => 
 	[
+		new Provider{ "name": classof TaskOutputProvider },
 	];
 	
 }

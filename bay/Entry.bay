@@ -16,10 +16,14 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Cron;
+namespace Runtime.Task;
 
 use Runtime.lib;
-use Runtime.Cron.CronList;
+use Runtime.RuntimeUtils;
+use Runtime.Annotations.IntrospectionClass;
+use Runtime.Task.TaskList;
+use Runtime.Task.TaskMethod;
+use Runtime.Task.TaskOutputProvider;
 
 
 class Entry
@@ -30,13 +34,75 @@ class Entry
 	 */
 	static async void run()
 	{
-		Collection<string> cron_list = @.entities.filter( lib::isInstance(classof CronList) );
+		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
 		
-		log(@.cli_args);
+		int sz = @.cli_args.count();
 		
-		/*
-		log(cron_list);
-		*/
+		/* Output all tasks */
+		if (sz == 1)
+		{
+			output.writeln("Methods:");
+			for (int i=0; i<task_lists.count(); i++)
+			{
+				TaskList task_list = task_lists.item(i);
+				string class_name = task_list.className();
+				
+				Collection<string> methods = RuntimeUtils::getMethodsIntrospection
+				(
+					class_name, classof TaskMethod
+				);
+				
+				for (int j=0; j<methods.count(); j++)
+				{
+					/*output -> method writeln("  " ~ class_name ~ "::" ~ methods.item(j));*/
+				}
+				
+			}
+		}
+		
+		/* Call method */
+		else if (sz == 2)
+		{
+			string cmd = @.cli_args.item(1);
+			Collection arr = rs::split("::", cmd);
+			string class_name = arr.get(0, "");
+			string method_name = arr.get(1, "");
+			if (static::canRun(class_name, method_name))
+			{
+				fn f = rtl::method(class_name, method_name);
+				await rtl::apply(f, []);
+			}
+			else
+			{
+				/*output -> method writeln("Method not found");*/
+			}
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * Can run
+	 */
+	pure bool canRun(string class_name, string method_name)
+	{
+		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
+		
+		TaskList task_list = task_lists.findItem
+		(
+			bool (TaskList task_list) use (class_name) => task_list.className() == class_name
+		);
+		
+		if (task_list == null) return false;
+		
+		Collection<string> methods = RuntimeUtils::getMethodsIntrospection
+		(
+			class_name, classof TaskMethod
+		);
+		
+		return methods.indexOf(method_name) != -1;
 	}
 	
 }

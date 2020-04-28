@@ -16,11 +16,22 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Cron;
+namespace Runtime.Task;
 
-use Runtime.CoreStruct;
+use Runtime.CoreProvider;
 
 
-struct CronMethod extends CoreStruct
+class TaskOutputProvider extends CoreProvider
 {
+	
+	fn writeln(string msg) =>
+		async void (TaskOutputProvider provider)
+		{
+			#switch
+			#case ifcode PHP then
+			echo $msg . "\n";
+			#endswitch
+		}
+	;
+	
 }
