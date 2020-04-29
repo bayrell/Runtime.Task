@@ -55,7 +55,7 @@ class Entry
 				
 				for (int j=0; j<methods.count(); j++)
 				{
-					/*output -> method writeln("  " ~ class_name ~ "::" ~ methods.item(j));*/
+					output -> method writeln("  " ~ class_name ~ "::" ~ methods.item(j));
 				}
 				
 			}
@@ -75,7 +75,7 @@ class Entry
 			}
 			else
 			{
-				/*output -> method writeln("Method not found");*/
+				output -> method writeln("Method not found");
 			}
 		}
 		

@@ -24,8 +24,8 @@ use Runtime.CoreProvider;
 class TaskOutputProvider extends CoreProvider
 {
 	
-	fn writeln(string msg) =>
-		async void (TaskOutputProvider provider)
+	static fn writeln(string msg) =>
+		async void (TaskOutputProvider provider) use (msg)
 		{
 			#switch
 			#case ifcode PHP then
