@@ -1,0 +1,125 @@
+/*!
+ *  Bayrell Runtime Library
+ *
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+namespace Runtime.Task;
+
+use Runtime.lib;
+use Runtime.RuntimeUtils;
+use Runtime.Task.CronMethodInfo;
+use Runtime.Task.CronTask;
+use Runtime.Task.CronTimer;
+use Runtime.Task.TaskLib;
+use Runtime.Task.TaskList;
+use Runtime.Task.TaskMethod;
+use Runtime.Task.TaskOutputProvider;
+
+
+@TaskList{}
+class Cron
+{
+	
+	
+	/**
+	 * Run cron
+	 */
+	@TaskMethod{}
+	static async void run()
+	{
+		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		output -> method writeln ("Run cron");
+		
+		Collection<CronMethodInfo> methods = await TaskLib::getCronMethods();
+		for (int i=0; i<methods.count(); i++)
+		{
+			CronMethodInfo info = methods.item(i);
+			await static::runMethod(info);
+		};
+		
+	}
+	
+	
+	
+	/**
+	 * Loop cron
+	 */
+	@TaskMethod{}
+	static async void loop()
+	{
+		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		
+		while (true)
+		{
+			output -> method writeln ("Loop cron");
+			
+			Vector<CronMethodInfo> methods = await TaskLib::getCronMethods();
+			methods = methods.toVector();
+			for (int i=0; i<methods.count(); i++)
+			{
+				CronMethodInfo info = methods.item(i);
+				info = await static::runMethod(info);
+				methods.set(i, info);
+			};
+			
+			await rtl::usleep(5000000);
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * Run cron
+	 */
+	static async CronMethodInfo runMethod(CronMethodInfo info)
+	{
+		int current_time = @.time();
+		
+		if (info.can_run == false) return;
+		if (info.next_run > current_time) return;
+		
+		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		output -> method writeln ("Run task " ~ info.command());
+		
+		/* Run method */
+		fn f = rtl::method(info.class_name, info.method_name);
+		await f();
+		
+		info = TaskLib::updateLastRun(info, current_time);
+		
+		return info;
+	}
+	
+	
+	
+	/**
+	 * Returns cron methods list
+	 */
+	@TaskMethod{}
+	static async void list()
+	{
+		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		output -> method writeln ("Cron list:");
+		Collection<CronMethodInfo> methods = TaskLib::getCronMethods();
+		for (int i=0; i<methods.count(); i++)
+		{
+			CronMethodInfo info = methods.item(i);
+			output -> method writeln ("  " ~ info.command());
+		}
+	}
+	
+}

@@ -21,6 +21,7 @@ namespace Runtime.Task;
 use Runtime.lib;
 use Runtime.RuntimeUtils;
 use Runtime.Annotations.IntrospectionClass;
+use Runtime.Task.TaskLib;
 use Runtime.Task.TaskList;
 use Runtime.Task.TaskMethod;
 use Runtime.Task.TaskOutputProvider;
@@ -42,22 +43,12 @@ class Entry
 		/* Output all tasks */
 		if (sz == 1)
 		{
-			output.writeln("Methods:");
-			for (int i=0; i<task_lists.count(); i++)
+			output -> method writeln("Methods:");
+			
+			Collection<string> methods = TaskLib::getTaskMethods();
+			for (int i=0; i<methods.count(); i++)
 			{
-				TaskList task_list = task_lists.item(i);
-				string class_name = task_list.className();
-				
-				Collection<string> methods = RuntimeUtils::getMethodsIntrospection
-				(
-					class_name, classof TaskMethod
-				);
-				
-				for (int j=0; j<methods.count(); j++)
-				{
-					output -> method writeln("  " ~ class_name ~ "::" ~ methods.item(j));
-				}
-				
+				output -> method writeln ("  " ~ methods.item(i));
 			}
 		}
 		
@@ -99,7 +90,7 @@ class Entry
 		
 		Collection<string> methods = RuntimeUtils::getMethodsIntrospection
 		(
-			class_name, classof TaskMethod
+			class_name, [ classof TaskMethod ]
 		);
 		
 		return methods.indexOf(method_name) != -1;

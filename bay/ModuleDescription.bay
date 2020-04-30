@@ -18,7 +18,7 @@
 
 namespace Runtime.Task;
 
-use Runtime.Annotations.Manager;
+use Runtime.Annotations.Entity;
 use Runtime.Annotations.LambdaChain;
 use Runtime.Annotations.LambdaChainDeclare;
 use Runtime.Annotations.Provider;
@@ -61,6 +61,7 @@ class ModuleDescription implements ModuleDescriptionInterface
 	 */
 	pure Collection<Dict> entities() => 
 	[
+		new Entity{ "name": "Runtime.Task.Cron" },
 		new Provider{ "name": classof TaskOutputProvider },
 	];
 	
