@@ -53,7 +53,7 @@ class Entry
 		}
 		
 		/* Call method */
-		else if (sz == 2)
+		else if (sz >= 2)
 		{
 			string cmd = @.cli_args.item(1);
 			Collection arr = rs::split("::", cmd);
