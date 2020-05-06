@@ -19,15 +19,43 @@
 namespace Runtime.Task;
 
 use Runtime.lib;
+use Runtime.RuntimeUtils;
 use Runtime.Interfaces.EntityInterface;
-use Runtime.Task.TaskList;
-use Runtime.Task.TaskMethod;
+use Runtime.Task.Annotations.TaskList;
+use Runtime.Task.Annotations.TaskMethod;
 use Runtime.Task.TaskOutputProvider;
 
 
 @TaskList{}
-class TaskCommand
+class Task
 {
+	
+	/**
+	 * Returns task methods
+	 */
+	pure Collection<string> getTaskMethods()
+	{
+		Vector<string> items = new Vector();
+		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
+		for (int i=0; i<task_lists.count(); i++)
+		{
+			TaskList task_list = task_lists.item(i);
+			string class_name = task_list.className();
+			
+			Collection<string> methods = RuntimeUtils::getMethodsIntrospection
+			(
+				class_name, [ classof TaskMethod ]
+			);
+			
+			for (int j=0; j<methods.count(); j++)
+			{
+				items.push(class_name ~ "::" ~ methods.item(j));
+			}
+		}
+		return items;
+	}
+	
+	
 	
 	/**
 	 * Run cron

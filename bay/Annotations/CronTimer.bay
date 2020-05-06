@@ -16,12 +16,12 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Task;
+namespace Runtime.Task.Annotations;
 
-use Runtime.Task.TaskMethod;
+use Runtime.Task.Annotations.TaskMethod;
 
 
-struct CronTask extends TaskMethod
+struct CronTimer extends TaskMethod
 {
-	string cron = "";
+	int timer = 0;
 }

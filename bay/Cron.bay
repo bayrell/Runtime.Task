@@ -20,12 +20,16 @@ namespace Runtime.Task;
 
 use Runtime.lib;
 use Runtime.RuntimeUtils;
+use Runtime.Annotations.Entity;
+use Runtime.Annotations.IntrospectionClass;
+use Runtime.Annotations.IntrospectionInfo;
+use Runtime.ORM.Cursor;
+use Runtime.ORM.ORMProviderInterface;
+use Runtime.Task.Annotations.CronTask;
+use Runtime.Task.Annotations.CronTimer;
+use Runtime.Task.Annotations.TaskList;
+use Runtime.Task.Annotations.TaskMethod;
 use Runtime.Task.CronMethodInfo;
-use Runtime.Task.CronTask;
-use Runtime.Task.CronTimer;
-use Runtime.Task.TaskLib;
-use Runtime.Task.TaskList;
-use Runtime.Task.TaskMethod;
 use Runtime.Task.TaskOutputProvider;
 
 
@@ -43,11 +47,11 @@ class Cron
 		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
 		output -> method writeln ("Run cron");
 		
-		Collection<CronMethodInfo> methods = await TaskLib::getCronMethods();
+		Collection<CronMethodInfo> methods = await static::getCronMethods();
 		for (int i=0; i<methods.count(); i++)
 		{
 			CronMethodInfo info = methods.item(i);
-			await static::runMethod(info);
+			info = await static::runMethod(info);
 		};
 		
 	}
@@ -66,8 +70,9 @@ class Cron
 		{
 			output -> method writeln ("Loop cron");
 			
-			Vector<CronMethodInfo> methods = await TaskLib::getCronMethods();
+			Vector<CronMethodInfo> methods = await static::getCronMethods();
 			methods = methods.toVector();
+			
 			for (int i=0; i<methods.count(); i++)
 			{
 				CronMethodInfo info = methods.item(i);
@@ -75,7 +80,7 @@ class Cron
 				methods.set(i, info);
 			};
 			
-			await rtl::usleep(5000000);
+			await rtl::sleep(5000);
 		}
 		
 	}
@@ -89,17 +94,24 @@ class Cron
 	{
 		int current_time = @.time();
 		
-		if (info.can_run == false) return;
-		if (info.next_run > current_time) return;
+		if (info.can_run == false) return info;
+		if (info.next_run > current_time) return info;
 		
-		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
-		output -> method writeln ("Run task " ~ info.command());
+		info = await static::updateLastRun(info, current_time);
 		
-		/* Run method */
-		fn f = rtl::method(info.class_name, info.method_name);
-		await f();
-		
-		info = TaskLib::updateLastRun(info, current_time);
+		try
+		{
+			TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+			output -> method writeln ("Run task " ~ info.command());
+			
+			/* Run method */
+			fn f = rtl::method(info.class_name, info.method_name);
+			await f();
+		}
+		catch (var e)
+		{
+			log(e);
+		}
 		
 		return info;
 	}
@@ -114,7 +126,7 @@ class Cron
 	{
 		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
 		output -> method writeln ("Cron list:");
-		Collection<CronMethodInfo> methods = TaskLib::getCronMethods();
+		Collection<CronMethodInfo> methods = static::getCronMethods();
 		for (int i=0; i<methods.count(); i++)
 		{
 			CronMethodInfo info = methods.item(i);
@@ -122,4 +134,104 @@ class Cron
 		}
 	}
 	
+	
+	
+	/**
+	 * Returns cron methods
+	 */
+	static async Collection<string> getCronMethods()
+	{
+		ORMProviderInterface p = @ -> method getProvider(classof ORMProviderInterface);
+		Vector<CronMethodInfo> items = new Vector();
+		
+		/* Get methods from annotations */
+		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
+		for (int i=0; i<task_lists.count(); i++)
+		{
+			TaskList task_list = task_lists.item(i);
+			string class_name = task_list.className();
+			
+			Collection<string> methods = RuntimeUtils::getMethodsIntrospection
+			(
+				class_name, [ classof CronTask, classof CronTimer ]
+			);
+			
+			for (int j=0; j<methods.count(); j++)
+			{
+				string method_name = methods.item(j);
+				
+				IntrospectionInfo info = rtl::method(class_name, "getMethodInfoByName")(method_name);
+				
+				CronTask task = info.annotations.findItem( lib::isInstance(classof CronTask) );
+				CronTask timer = info.annotations.findItem( lib::isInstance(classof CronTimer) );
+				
+				CronMethodInfo info = new CronMethodInfo
+				{
+					"class_name": class_name,
+					"method_name": method_name,
+					"kind": (timer != null) ? CronMethodInfo::KIND_TIMER : CronMethodInfo::KIND_TASK,
+					"timer": (timer != null) ? timer.timer : 0,
+					"cron": (task != null) ? timer.cron : "",
+					"can_run": true,
+				}
+				
+				items.push(info);
+			}
+		}
+		
+		
+		/* Update last run and next_run */
+		Cursor cursor = p
+			-> await method query
+			(
+				"select * from " ~ p.prefix ~ "tasks"
+			)
+		;
+		
+		while (true)
+		{
+			Dict row = cursor.fetch();
+			if (not row) break;
+			
+			int pos = items.find
+			(
+				bool (CronMethodInfo info) use (row) => info.command() == row.get("command", "")
+			);
+			if (pos != -1)
+			{
+				CronMethodInfo info = items.item(pos);
+				info <= last_run <= row.get("last_run", 0);
+				info = info::updateNextRun(info);
+				items.set(pos, info);
+			}
+		}		
+		cursor.close();
+		
+		return items.toCollection();
+	}
+	
+	
+	
+	/**
+	 * Update last run
+	 */
+	static async CronMethodInfo updateLastRun(CronMethodInfo info, int last_run)
+	{
+		ORMProviderInterface p = @ -> method getProvider(classof ORMProviderInterface);
+		p
+			-> await method insert_or_update
+			(
+				p.prefix ~ "tasks",
+				{
+					"command": info.command(),
+				},
+				{
+					"last_run": last_run,
+				}
+			)
+			-> await method end
+		;
+		info <= last_run <= last_run;
+		return info;
+	}	
 }

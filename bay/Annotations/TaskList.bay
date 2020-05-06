@@ -16,12 +16,12 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Task;
+namespace Runtime.Task.Annotations;
 
-use Runtime.Task.TaskMethod;
+use Runtime.CoreStruct;
+use Runtime.Annotations.Entity;
 
 
-struct CronTimer extends TaskMethod
+struct TaskList extends Entity
 {
-	int timer = 0;
 }
