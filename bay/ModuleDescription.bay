@@ -18,11 +18,13 @@
 
 namespace Runtime.Task;
 
+use Runtime.Annotations.Driver;
 use Runtime.Annotations.Entity;
 use Runtime.Annotations.LambdaChain;
 use Runtime.Annotations.LambdaChainDeclare;
 use Runtime.Annotations.Provider;
 use Runtime.Interfaces.ModuleDescriptionInterface;
+use Runtime.Task.TaskDriver;
 use Runtime.Task.TaskOutputProvider;
 
 
@@ -63,6 +65,7 @@ class ModuleDescription implements ModuleDescriptionInterface
 	[
 		new Entity{ "name": "Runtime.Task.Cron" },
 		new Entity{ "name": "Runtime.Task.Task" },
+		new Driver{ "name": classof TaskDriver },
 		new Provider{ "name": classof TaskOutputProvider },
 	];
 	

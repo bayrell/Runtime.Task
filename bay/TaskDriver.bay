@@ -18,19 +18,38 @@
 
 namespace Runtime.Task;
 
-use Runtime.CoreProvider;
-use Runtime.Task.TaskDriver;
+use Runtime.CoreDriver;
 
 
-class TaskOutputProvider extends CoreProvider
+class TaskDriver extends CoreDriver
 {
+	bool output_cli = false;
 	
-	static fn writeln(string msg) =>
-		async void (TaskOutputProvider provider) use (msg)
+	
+	
+	/**
+	 * Start driver
+	 */
+	public async void startDriver()
+	{
+		if (@.entrypoint == "Runtime.Task.Entry")
 		{
-			TaskDriver driver = @ -> method getDriver(classof TaskDriver);
-			driver.write(msg ~ "\n");
+			this.output_cli = true;
 		}
-	;
+	}
+	
+	
+	
+	/**
+	 * Write
+	 */
+	void write(string msg)
+	{
+		if (not this.output_cli) return;
+		#switch
+		#case ifcode PHP then
+		echo $msg;
+		#endswitch
+	}
 	
 }
