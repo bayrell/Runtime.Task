@@ -16,12 +16,12 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Task.Annotations;
+namespace Runtime.Task;
 
-use Runtime.CoreStruct;
-use Runtime.Core.Entity;
+use Runtime.Task.TaskMethod;
 
 
-struct TaskList extends Entity
+struct CronTask extends TaskMethod
 {
+	string cron = "";
 }

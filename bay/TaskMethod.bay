@@ -16,7 +16,7 @@
  *  limitations under the License.
  */
 
-namespace Runtime.Task.Annotations;
+namespace Runtime.Task;
 
 use Runtime.CoreStruct;
 

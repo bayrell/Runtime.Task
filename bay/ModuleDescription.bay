@@ -63,8 +63,7 @@ class ModuleDescription implements ModuleDescriptionInterface
 	 */
 	pure Collection<Dict> entities() => 
 	[
-		new Entity{ "name": "Runtime.Task.Cron" },
-		new Entity{ "name": "Runtime.Task.Task" },
+		new Entity{ "name": "Runtime.Task.Tasks" },
 		new Driver{ "name": classof TaskDriver },
 		new Provider{ "name": classof TaskOutputProvider },
 	];

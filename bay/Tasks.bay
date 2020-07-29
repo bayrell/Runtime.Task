@@ -21,13 +21,13 @@ namespace Runtime.Task;
 use Runtime.lib;
 use Runtime.RuntimeUtils;
 use Runtime.Interfaces.EntityInterface;
-use Runtime.Task.Annotations.TaskList;
-use Runtime.Task.Annotations.TaskMethod;
+use Runtime.Task.TaskList;
+use Runtime.Task.TaskMethod;
 use Runtime.Task.TaskOutputProvider;
 
 
 @TaskList{}
-class Task
+class Tasks
 {
 	
 	/**
