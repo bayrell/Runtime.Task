@@ -18,14 +18,14 @@
 
 namespace Runtime.Task;
 
-use Runtime.Annotations.Driver;
-use Runtime.Annotations.Entity;
-use Runtime.Annotations.LambdaChain;
-use Runtime.Annotations.LambdaChainDeclare;
-use Runtime.Annotations.Provider;
-use Runtime.Interfaces.ModuleDescriptionInterface;
+use Runtime.Core.Driver;
+use Runtime.Core.Entity;
+use Runtime.Core.LambdaChain;
+use Runtime.Core.LambdaChainDeclare;
+use Runtime.Core.Provider;
 use Runtime.Task.TaskDriver;
 use Runtime.Task.TaskOutputProvider;
+use Runtime.Interfaces.ModuleDescriptionInterface;
 
 
 class ModuleDescription implements ModuleDescriptionInterface

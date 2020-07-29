@@ -20,17 +20,17 @@ namespace Runtime.Task;
 
 use Runtime.lib;
 use Runtime.RuntimeUtils;
-use Runtime.Annotations.Entity;
 use Runtime.Annotations.IntrospectionClass;
 use Runtime.Annotations.IntrospectionInfo;
-use Runtime.ORM.Cursor;
-use Runtime.ORM.ORMProviderInterface;
+use Runtime.Core.Entity;
 use Runtime.Task.Annotations.CronTask;
 use Runtime.Task.Annotations.CronTimer;
 use Runtime.Task.Annotations.TaskList;
 use Runtime.Task.Annotations.TaskMethod;
 use Runtime.Task.CronMethodInfo;
 use Runtime.Task.TaskOutputProvider;
+use Runtime.ORM.Cursor;
+use Runtime.ORM.ORMProviderInterface;
 
 
 @TaskList{}

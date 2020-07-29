@@ -19,7 +19,7 @@
 namespace Runtime.Task.Annotations;
 
 use Runtime.CoreStruct;
-use Runtime.Annotations.Entity;
+use Runtime.Core.Entity;
 
 
 struct TaskList extends Entity

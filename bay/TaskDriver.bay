@@ -18,7 +18,7 @@
 
 namespace Runtime.Task;
 
-use Runtime.CoreDriver;
+use Runtime.Core.CoreDriver;
 
 
 class TaskDriver extends CoreDriver
@@ -32,7 +32,7 @@ class TaskDriver extends CoreDriver
 	 */
 	public async void startDriver()
 	{
-		if (@.entrypoint == "Runtime.Task.Entry")
+		if (@.entry_point == "Runtime.Task.Entry")
 		{
 			this.output_cli = true;
 		}
@@ -47,6 +47,8 @@ class TaskDriver extends CoreDriver
 	{
 		if (not this.output_cli) return;
 		#switch
+		#case ifcode JAVASCRIPT then
+		process.stdout.write(msg);
 		#case ifcode PHP then
 		echo $msg;
 		#endswitch
