@@ -23,4 +23,8 @@ use Runtime.CoreStruct;
 
 struct TaskMethod extends CoreStruct
 {
+	string class_name = "";
+	string method_name = "";
+	string alias = "";
+	string description = "";
 }

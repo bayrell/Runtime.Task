@@ -25,12 +25,10 @@ use Runtime.Task.TaskDriver;
 class TaskOutputProvider extends CoreProvider
 {
 	
-	static fn writeln(string msg) =>
-		async void (TaskOutputProvider provider) use (msg)
-		{
-			TaskDriver driver = @ -> method getDriver(classof TaskDriver);
-			driver.write(msg ~ "\n");
-		}
-	;
+	void writeln(string msg)
+	{
+		TaskDriver driver = @.getDriver(classof TaskDriver);
+		driver.write(msg ~ "\n");
+	}
 	
 }

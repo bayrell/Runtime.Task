@@ -35,20 +35,32 @@ class Entry
 	 */
 	static async void run()
 	{
-		TaskOutputProvider output = @ -> method getProvider(classof TaskOutputProvider);
+		TaskOutputProvider output = @.getProvider(classof TaskOutputProvider);
 		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
 		
 		int sz = @.cli_args.count();
+		Collection<TaskMethod> methods = Tasks::getTaskMethods();
 		
 		/* Output all tasks */
 		if (sz == 1)
 		{
-			output -> method writeln("Methods:");
+			output.writeln("Methods:");
+			Map<bool> h = new Map();
 			
-			Collection<string> methods = Tasks::getTaskMethods();
 			for (int i=0; i<methods.count(); i++)
 			{
-				output -> method writeln ("  " ~ methods.item(i));
+				TaskMethod m = methods.item(i);
+				
+				string content = "";
+				if (m.alias != "" and not h.has(m.alias))
+				{
+					content = m.alias;
+					h.set(m.alias, true);
+				}
+				else content = m.class_name ~ "::" ~ m.method_name;
+				if (m.description != "") content ~= " - " ~ m.description;
+				
+				output.writeln("  " ~ content);
 			}
 		}
 		
@@ -56,44 +68,30 @@ class Entry
 		else if (sz >= 2)
 		{
 			string cmd = @.cli_args.item(1);
-			Collection arr = rs::split("::", cmd);
-			string class_name = arr.get(0, "");
-			string method_name = arr.get(1, "");
-			if (static::canRun(class_name, method_name))
+			TaskMethod find_method = methods.findItem
+			(
+				bool (TaskMethod m) use (cmd)
+				{
+					if (m.alias == cmd) return true;
+					Collection arr = rs::split("::", cmd);
+					string class_name = arr.get(0, "");
+					string method_name = arr.get(1, "");
+					if (m.class_name == class_name and m.method_name == method_name) return true;
+					return false;
+				}
+			);
+			
+			if (find_method != null)
 			{
-				fn f = rtl::method(class_name, method_name);
-				await rtl::apply(f, []);
+				fn f = rtl::method(find_method.class_name, find_method.method_name);
+				await f();
 			}
 			else
 			{
-				output -> method writeln("Method not found");
+				output.writeln("Method not found");
 			}
 		}
 		
-	}
-	
-	
-	
-	/**
-	 * Can run
-	 */
-	pure bool canRun(string class_name, string method_name)
-	{
-		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
-		
-		TaskList task_list = task_lists.findItem
-		(
-			bool (TaskList task_list) use (class_name) => task_list.className() == class_name
-		);
-		
-		if (task_list == null) return false;
-		
-		Collection<string> methods = RuntimeUtils::getMethodsIntrospection
-		(
-			class_name, [ classof TaskMethod ]
-		);
-		
-		return methods.indexOf(method_name) != -1;
 	}
 	
 }
