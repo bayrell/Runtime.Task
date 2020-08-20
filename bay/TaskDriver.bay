@@ -54,4 +54,13 @@ class TaskDriver extends CoreDriver
 		#endswitch
 	}
 	
+	
+	
+	/**
+	 * Write line
+	 */
+	void writeln(string msg)
+	{
+		this.write(msg ~ "\n");
+	}
 }

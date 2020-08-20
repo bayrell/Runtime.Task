@@ -22,9 +22,7 @@ use Runtime.Core.Driver;
 use Runtime.Core.Entity;
 use Runtime.Core.LambdaChain;
 use Runtime.Core.LambdaChainDeclare;
-use Runtime.Core.Provider;
 use Runtime.Task.TaskDriver;
-use Runtime.Task.TaskOutputProvider;
 use Runtime.Interfaces.ModuleDescriptionInterface;
 
 
@@ -65,7 +63,6 @@ class ModuleDescription implements ModuleDescriptionInterface
 	[
 		new Entity{ "name": "Runtime.Task.Tasks" },
 		new Driver{ "name": classof TaskDriver },
-		new Provider{ "name": classof TaskOutputProvider },
 	];
 	
 }

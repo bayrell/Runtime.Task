@@ -18,7 +18,7 @@
 
 namespace Runtime.Task;
 
-use Runtime.CoreStruct;
+use Runtime.BaseStruct;
 use Runtime.Core.Entity;
 
 

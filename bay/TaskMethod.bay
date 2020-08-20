@@ -18,10 +18,10 @@
 
 namespace Runtime.Task;
 
-use Runtime.CoreStruct;
+use Runtime.BaseStruct;
 
 
-struct TaskMethod extends CoreStruct
+struct TaskMethod extends BaseStruct
 {
 	string class_name = "";
 	string method_name = "";

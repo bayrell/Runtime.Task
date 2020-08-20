@@ -24,7 +24,7 @@ use Runtime.Annotations.IntrospectionClass;
 use Runtime.Task.TaskList;
 use Runtime.Task.TaskMethod;
 use Runtime.Task.Tasks;
-use Runtime.Task.TaskOutputProvider;
+use Runtime.Task.TaskDriver;
 
 
 class Entry
@@ -33,9 +33,9 @@ class Entry
 	/**
 	 * Run cron
 	 */
-	static async void run()
+	static async void appRun()
 	{
-		TaskOutputProvider output = @.getProvider(classof TaskOutputProvider);
+		TaskDriver output = @.getDriver(classof TaskDriver);
 		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
 		
 		int sz = @.cli_args.count();
