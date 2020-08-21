@@ -22,9 +22,9 @@ use Runtime.lib;
 use Runtime.RuntimeUtils;
 use Runtime.Annotations.IntrospectionClass;
 use Runtime.Interfaces.EntityInterface;
+use Runtime.Task.TaskDriver;
 use Runtime.Task.TaskList;
 use Runtime.Task.TaskMethod;
-use Runtime.Task.TaskOutputProvider;
 
 
 @TaskList{}
@@ -75,7 +75,7 @@ class Tasks
 	@TaskMethod{ "alias": "entities", "description": "Show all entities" }
 	static async void entities()
 	{
-		TaskOutputProvider output = @.getProvider(classof TaskOutputProvider);
+		TaskDriver output = @.getDriver(classof TaskDriver);
 		output.writeln ("List entities:");
 		
 		Collection<EntityInterface> entities = @.entities;
