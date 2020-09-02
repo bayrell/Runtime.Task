@@ -19,8 +19,8 @@
 namespace Runtime.Task;
 
 use Runtime.lib;
+use Runtime.IntrospectionClass;
 use Runtime.RuntimeUtils;
-use Runtime.Annotations.IntrospectionClass;
 use Runtime.Task.TaskList;
 use Runtime.Task.TaskMethod;
 use Runtime.Task.Tasks;
