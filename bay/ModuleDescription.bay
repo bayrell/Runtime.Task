@@ -23,10 +23,9 @@ use Runtime.Core.Entity;
 use Runtime.Core.LambdaChain;
 use Runtime.Core.LambdaChainDeclare;
 use Runtime.Task.TaskDriver;
-use Runtime.Interfaces.ModuleDescriptionInterface;
 
 
-class ModuleDescription implements ModuleDescriptionInterface
+class ModuleDescription
 {
 
 	/**
