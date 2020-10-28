@@ -27,4 +27,7 @@ struct TaskMethod extends BaseStruct
 	string method_name = "";
 	string alias = "";
 	string description = "";
+	int last_run = 0;
+	bool can_run = true;
+	string getCommand() => this.class_name ~ "::" ~ this.method_name;
 }

@@ -24,4 +24,5 @@ use Runtime.Task.TaskMethod;
 struct CronTimer extends TaskMethod
 {
 	int timer = 0;
+	int nextRun() => this.last_run + this.timer;
 }

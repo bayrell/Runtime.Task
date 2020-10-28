@@ -24,4 +24,5 @@ use Runtime.Task.TaskMethod;
 struct CronTask extends TaskMethod
 {
 	string cron = "";
+	int nextRun() => 0;
 }
