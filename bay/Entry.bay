@@ -55,7 +55,7 @@ class Entry
 				if (m.alias != "" and not h.has(m.alias))
 				{
 					content = m.alias;
-					h.set(m.alias, true);
+					h.setValue(m.alias, true);
 				}
 				else content = m.class_name ~ "::" ~ m.method_name;
 				if (m.description != "") content ~= " - " ~ m.description;

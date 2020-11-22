@@ -58,7 +58,7 @@ class Tasks
 								"class_name": class_name,
 								"method_name": method_name,
 							};
-							items.push(item);
+							items.pushValue(item);
 						}
 					}
 				}
