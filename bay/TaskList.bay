@@ -19,7 +19,7 @@
 namespace Runtime.Task;
 
 use Runtime.BaseStruct;
-use Runtime.Core.Entity;
+use Runtime.Entity;
 
 
 struct TaskList extends Entity
