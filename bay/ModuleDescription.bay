@@ -61,8 +61,8 @@ class ModuleDescription
 	 */
 	pure Collection<Dict> entities() => 
 	[
-		/*new Entity{ "name": "Runtime.Task.Tasks" },
-		new Driver{ "name": classof TaskDriver },*/
+		new Entity{ "name": "Runtime.Task.Tasks" },
+		new Driver{ "name": classof TaskDriver },
 	];
 	
 }

@@ -41,8 +41,8 @@ class Tasks
 			TaskList task_list = task_lists.item(i);
 			string class_name = task_list.className();
 			
-			IntrospectionClass info = RuntimeUtils::getClassIntrospection(class_name);
-			info.methods.each
+			Collection<string> methods = rtl::getMethodsAnnotations(class_name);
+			methods.each
 			(
 				void (Collection arr, string method_name) use (items, class_name)
 				{
