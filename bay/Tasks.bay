@@ -1,7 +1,7 @@
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2021 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ namespace Runtime.Task;
 
 use Runtime.lib;
 use Runtime.BaseStruct;
+use Runtime.Context;
 use Runtime.Task.TaskDriver;
 use Runtime.Task.TaskList;
 use Runtime.Task.TaskMethod;
@@ -34,35 +35,7 @@ class Tasks
 	 */
 	pure Collection<TaskMethod> getTaskMethods()
 	{
-		Vector<string> items = new Vector();
-		Collection<TaskList> task_lists = @.entities.filter( lib::isInstance(classof TaskList) );
-		for (int i=0; i<task_lists.count(); i++)
-		{
-			TaskList task_list = task_lists.item(i);
-			string class_name = task_list.className();
-			
-			Collection<string> methods = rtl::getMethodsAnnotations(class_name);
-			methods.each
-			(
-				void (Collection arr, string method_name) use (items, class_name)
-				{
-					for (int j=0; j<arr.count(); j++)
-					{
-						TaskMethod item = arr.item(j);
-						if (item instanceof TaskMethod)
-						{
-							item = item.copy
-							{
-								"class_name": class_name,
-								"method_name": method_name,
-							};
-							items.pushValue(item);
-						}
-					}
-				}
-			);
-		}
-		return items.toCollection();
+		return Context::getSubEntities(@.entities, classof TaskList, classof TaskMethod);
 	}
 	
 	
@@ -89,7 +62,8 @@ class Tasks
 		for (int i=0; i<entities.count(); i++)
 		{
 			BaseStruct item = entities.item(i);
-			output.writeln((i + 1) ~ ") " ~ item.logName());
+			/* log(item); */
+			output.writeln((i + 1) ~ ") " ~ item.entityName());
 		}
 	}
 	
