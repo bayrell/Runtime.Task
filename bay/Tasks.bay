@@ -63,7 +63,7 @@ class Tasks
 		{
 			BaseStruct item = entities.item(i);
 			/* log(item); */
-			output.writeln((i + 1) ~ ") " ~ item.entityName());
+			output.writeln((i + 1) ~ ") " ~ item.taskOutput());
 		}
 	}
 	
